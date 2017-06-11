@@ -109,7 +109,7 @@ int comparar_menor_mayor(const void *a, const void *b);
 int procesar_usuarios(char* nom_archivo){
 	
 	FILE* archivo;
-	archivo = fopen( nom_archivo,"r");
+	archivo = fopen(nom_archivo,"r");
 	if (!archivo){
 		printf("Error al abrir el archivo\n");
 		return -1;
@@ -119,35 +119,32 @@ int procesar_usuarios(char* nom_archivo){
 	
 	char* str = NULL;
 	size_t n;
-	ssize_t largo_linea= getline(&str, &n, archivo);
+	ssize_t largo_linea = getline(&str, &n, archivo);
 	
 	while(largo_linea!=-1){
 		
-		char** arreglo= split(str,',');
-		int contador=0;
-		char* usuario= arreglo[0];
-		for(int i=1;arreglo[i]!=NULL;i++){
-			contador=contador+1;
+		char** arreglo = split(str,',');
+		int contador = 0;
+		char* usuario = arreglo[0];
+		for(int i=1; arreglo[i] != NULL; i++){
+			contador = contador+1;
 		}
-		if(hash_pertenece(hash,usuario)){//osea ya está de antes
-			void* cont = hash_obtener(hash,usuario);
-			contador+= (int) cont;
+		if (hash_pertenece(hash,usuario)){//osea ya está de antes
+			int* cont = hash_obtener(hash,usuario);
+			contador += *(int*) cont;
 		}
-		hash_guardar(hash,usuario,(void*)contador);
+		hash_guardar(hash,usuario,&contador);
 		free(str);
 		free_strv(arreglo);
 		str = NULL;
-		largo_linea=getline(&str,&n,archivo);
-	}
-	if (str){
-		free (str);
+		largo_linea = getline(&str, &n, archivo);
 	}
   
-	hash_iter_t* iter= hash_iter_crear(hash);
-	void** arreglo= malloc(sizeof(void*) * hash_cantidad(hash));
-	for(int i=0; i<=hash_cantidad(hash);i++){
-	char* clave = (char*)hash_iter_ver_actual(iter);
-	void* dato = hash_obtener(hash, clave);
+	hash_iter_t* iter = hash_iter_crear(hash);
+	void** arreglo = malloc(sizeof(void*) * hash_cantidad(hash));
+	for(int i=0; !hash_iter_al_final(iter); i++){
+		char* clave = (char*)hash_iter_ver_actual(iter);
+		void* dato = hash_obtener(hash, clave);
 		nodo_h_t* nodo = nodo_h_crear(clave, dato);
 		arreglo[i] = nodo;
 		hash_iter_avanzar(iter);
@@ -155,6 +152,13 @@ int procesar_usuarios(char* nom_archivo){
 	
 	ordenar_nombres(arreglo, (int)hash_cantidad(hash), comparar_menor_mayor);
 	
+	if (str){
+		free (str);
+	}
+	for (int i = 0; i != hash_cantidad(hash); i++){
+		free(arreglo[i]);
+	}
+	free(arreglo);
 	hash_iter_destruir(iter);
 	hash_destruir(hash);
 	fclose(archivo);
@@ -168,13 +172,17 @@ void ordenar_nombres(void** arreglo, int largo, cmp_func_t cmp){
 	// Imprimo
 	while (!heap_esta_vacio(heap)){
 		void* nodo = heap_desencolar(heap);
-		if ((int)nodo_dato((nodo_h_t*)nodo) != cantidad){
-			printf("%i: %s", (int)nodo_dato((nodo_h_t*)nodo), (char*)nodo_clave((nodo_h_t*)nodo));
+		if (*(int*)nodo_dato((nodo_h_t*)nodo) != cantidad){
+			printf("\n");
+			printf("%i: %s", *(int*)nodo_dato((nodo_h_t*)nodo), (char*)nodo_clave((nodo_h_t*)nodo));
+			cantidad = *(int*)nodo_dato((nodo_h_t*)nodo);
 		}
 		else{
 			printf(", %s", (char*)nodo_clave(nodo));
 		}
 	}
+	printf("\n");
+	heap_destruir(heap, NULL);
 }
 
 int comparar_menor_mayor(const void *a, const void *b){
@@ -189,7 +197,7 @@ int comparar_nodos_inverso(nodo_h_t* nodo_1, nodo_h_t* nodo_2){
 		} //ver de dar vuelta
 }
 
-int main(){
-	procesar_usuarios("tweets.txt");
+int main(int argc, char* argv[]){
+	procesar_usuarios(argv[1]);
 	return 0;
 }
