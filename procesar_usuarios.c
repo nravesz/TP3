@@ -104,7 +104,7 @@ char* nodo_clave(nodo_h_t* nodo){
  
 int comparar_nodos_inverso (nodo_h_t* nodo_1, nodo_h_t* nodo_2);
 void ordenar_nombres(void** arreglo, int largo, cmp_func_t cmp);
-int comparar_menor(const void *a, const void *b);
+int comparar_menor_mayor(const void *a, const void *b);
 
 int procesar_usuarios(char* nom_archivo){
 	
@@ -153,7 +153,7 @@ int procesar_usuarios(char* nom_archivo){
 		hash_iter_avanzar(iter);
 	}
 	
-	ordenar_nombres(arreglo, (int)hash_cantidad(hash), comparar_menor);
+	ordenar_nombres(arreglo, (int)hash_cantidad(hash), comparar_menor_mayor);
 	
 	hash_iter_destruir(iter);
 	hash_destruir(hash);
@@ -177,11 +177,11 @@ void ordenar_nombres(void** arreglo, int largo, cmp_func_t cmp){
 	}
 }
 
-int comparar_menor(const void *a, const void *b){
+int comparar_menor_mayor(const void *a, const void *b){
 	return comparar_nodos_inverso((nodo_h_t*)a,(nodo_h_t*)b);
 }
 //Para que compare de menor a mayor, no se si esto cree un heap de menores ajajaj
-int comparar_nodos_menor_mayor (nodo_h_t* nodo_1, nodo_h_t* nodo_2){
+int comparar_nodos_inverso(nodo_h_t* nodo_1, nodo_h_t* nodo_2){
 	if (nodo_1->dato > nodo_2->dato)return -1;
 	if(nodo_1->dato == nodo_2->dato)return 0;
 	else{
