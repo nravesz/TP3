@@ -7,6 +7,7 @@ def estadistica(grafo):
     print("Cantidad de vértices: ", vertices)
     print("Cantidad de aristas: ", aristas)
     print("Promedio de entrada de cada vértice: ", entrada)
+    print("Promedio de salida de cada vértice: ", entrada)
     print("Densidad del grafo: ", densidad)
 
 def aproximar_cantidad_vertices(grafo):
