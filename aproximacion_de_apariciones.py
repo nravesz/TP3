@@ -1,7 +1,7 @@
-def aproximacion_de_apariciones(grafo, usuario, n, y):
+def aproximacion_de_apariciones(grafo, usuario, y,n):
     dic = {}
-    for i in range(0, 3):
-        walks = random_walks(grafo, usuario, 100)
+    for i in range(10):
+        walks = random_walks(grafo, usuario, n)
         for usuario, apariciones in walks.items():
             dic[usuario] = dic.get(usuario, 0) + apariciones
     if y == 1 or y == 2:
