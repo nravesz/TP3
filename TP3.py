@@ -245,26 +245,31 @@ def estadistica(grafo):
 
 
 def comunidades(grafo):
-	print("Empieza comunidades")
 	lista_usuarios = label_propagation(grafo)
 	print("Termino de crear la lista de usuarios")
 	for comunidad, lista in lista_usuarios.items():
-		print("Comunidad: {}".format(comunidad))
-		print("Cantidad de integrantes: {}".format(len(lista)))
-		print("Integrantes:")
-		print(lista)
+		if len(lista) > 2000 or len(lista) < 4:
+			continue
+		else:
+			print("-Comunidad: {}".format(comunidad))
+			print("Cantidad de integrantes: {}".format(len(lista)))
+			print("Integrantes:")
+			print(lista)
+			print("\n")
 
 def label_propagation(grafo):
 	label = asignar_etiquetas(grafo)
-	ids = grafo.obtener_identificadores()
+	vertices = grafo.obtener_identificadores()
+	ids = sorted(vertices, key=lambda k: random.random())
 	for vertice in ids:
 		etiqueta = hallar_etiqueta(grafo, label, vertice)
 		label[vertice] = etiqueta
 	label_lista_usuarios = {}
 	for usuario, etiqueta in label.items():
-		print(usuario)
-		label_lista_usuarios[etiqueta] = label_lista_usuarios.get(etiqueta, []) + [usuario]
-	print("listo!")
+		if etiqueta not in label_lista_usuarios:
+			label_lista_usuarios[etiqueta] = [usuario]
+		else:
+			label_lista_usuarios[etiqueta].append(usuario)
 	return label_lista_usuarios
 
 
