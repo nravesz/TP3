@@ -245,10 +245,9 @@ def estadistica(grafo):
 
 
 def comunidades(grafo):
-"""Imprime las comunidades.
-Pre: recibe un Grafo() por parámetro.
-Post: las comunidades fueron impresas."""
+	print("Empieza comunidades")
 	lista_usuarios = label_propagation(grafo)
+	print("Termino de crear la lista de usuarios")
 	for comunidad, lista in lista_usuarios.items():
 		print("Comunidad: {}".format(comunidad))
 		print("Cantidad de integrantes: {}".format(len(lista)))
@@ -256,31 +255,21 @@ Post: las comunidades fueron impresas."""
 		print(lista)
 
 def label_propagation(grafo):
-"""Elije un vértice al azar del grafo y busca la etiqueta que presente mayor frecuencia entre sus adyacentes. Esta etiqueta es asignada
-tanto al vértice como a sus adyacentes. Esta operación es repetida n veces siendo n un número proporcional al tamanio del grafo.
-Pre: recibe un grafo por parámetro.
-Post: devuelve un diccionario que contiene a la etiqueta como clave y una lista de usuarios como valor."""
-	label = asignar_etiquetas(grafo) #label[usuario] = etiqueta
+	label = asignar_etiquetas(grafo)
 	ids = grafo.obtener_identificadores()
-	actual = random.choice(list(ids))
-	n = int(grafo.cantidad_vertices()/3)
-	for i in range(0, n, 1): #en cada iteración, se le asigna la etiqueta con más frecuencia tanto a actual como a sus adyacentes
-		etiqueta = hallar_etiqueta(grafo, label, actual)
-		label[actual] = etiqueta
-		list_ady  =grafo.obtener_adyacentes(actual)
-		for w in list_ady:
-			label[w]=etiqueta
-		actual = random.choice(list(ids))
-	label_lista_usuarios = {} # {etiqueta1 : [usuario1, usuario6], etiqueta2 : [usuario4]}
-	for usuario, etiqueta in label.items(): 
+	for vertice in ids:
+		etiqueta = hallar_etiqueta(grafo, label, vertice)
+		label[vertice] = etiqueta
+	label_lista_usuarios = {}
+	for usuario, etiqueta in label.items():
+		print(usuario)
 		label_lista_usuarios[etiqueta] = label_lista_usuarios.get(etiqueta, []) + [usuario]
+	print("listo!")
 	return label_lista_usuarios
 
+
 def asignar_etiquetas(grafo):
-"""Asigna una etiqueta del 0 al V-1 a cada vértice del grafo.
-Pre: recibe un grafo ya inicializado por parámetro.
-Post: devuelve un diccionario con el usuario como clave y la etiqueta como valor"""
-	label = {} #label[usuario] = etiqueta
+	label = {}
 	vertices = grafo.obtener_identificadores()
 	etiqueta = 0 #0 de originalidad (no puedo poner tantas casas de GOT)
 	for vertice in vertices:
@@ -289,15 +278,12 @@ Post: devuelve un diccionario con el usuario como clave y la etiqueta como valor
 	return label
 
 def hallar_etiqueta(grafo, label, vertice):
-"""Busca la etiqueta con mayor frecuencia del vértice recibido por parámetro.
-Pre: recibe un grafo, un diccionario y un vértice
-Post: devuelve la etiqueta con mayor frecuencia"""
 	adyacentes = grafo.obtener_adyacentes(vertice)
 	etiquetas_adyacentes = {}
 	for adyacente in adyacentes:
 		etiqueta = label[adyacente]
 		etiquetas_adyacentes[etiqueta] = etiquetas_adyacentes.get(etiqueta, 0) + 1
-	maximo, valor = max(etiquetas_adyacentes.items(), key=lambda x:x[1]) #devuelve la clave que contiene la mayor cantidad de apariciones
+	maximo, valor = max(etiquetas_adyacentes.items(), key=lambda x:x[1])
 	return maximo
 	
 def generar_grafo(grafo,archivo):
@@ -371,4 +357,4 @@ def main():
 		parametros= funcion[1:]
 		func[funcion[0]][0](grafo,*parametros)
 
-main()	
+main()
